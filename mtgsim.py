@@ -157,7 +157,7 @@ def print_pack(in_pack):
     if not total_wildcard_rarity:
         total_wildcard_rarity = in_pack['wildcard_slot'][0][1]
     total_pack_rarity = get_total_rarity(in_pack, total_wildcard_rarity)
-    print(f'Total: {total_pack_rarity}%')
+    print(f'Total: {total_pack_rarity:.7f}%')
 
     # print(f'Total Pack Rarity: {total_pack_rarity}%')
 
@@ -173,7 +173,8 @@ def get_total_rarity(calc_pack, wildcard_rm):
     foil = calc_pack["foil_slot"][0][1]/100
     token = calc_pack["token_slot"][0][1]/100
     # print([art, land, connected, showcase, wildcard, rare, foil, token])
-    total_rarity = round((math.prod([art, land, connected, showcase, wildcard, rare, foil, token])*100), 2)
+    total_rarity = math.prod([art, land, connected, showcase, wildcard, rare, foil, token])*100
+    # print(total_rarity)
     return total_rarity
 
 
@@ -199,17 +200,17 @@ def calc_wildcard_slot(pack):
 
 # test_pack = {'art_slot': [('non-signed', 95)],
 #              'connected_slot': [({'C': 4, 'U': 2}, 40)],
-#              'foil_slot': [('common', 71.4)],
+#              'foil_slot': [('mythic', 1)],
 #              'land_slot': [('non-foil', 85)],
-#              'rare_slot': [('rare', 86.5)],
+#              'rare_slot': [('mythic', 13.5)],
 #              'showcase_slot': [('uncommon', 58.82)],
 #              'token_slot': [('token', 75)],
-#              'wildcard_slot': [({'C': 2,
-#                                  'M': [],
+#              'wildcard_slot': [({'C': 0,
+#                                  'M': [('mythic', 13.5), ('mythic', 13.5)],
 #                                  'R': [],
-#                                  'RM': (0, None),
+#                                  'RM': (2, None),
 #                                  'U': 0},
-#                                 49)]}
+#                                 1.6)]}
 # #
 # #
 # print_pack(test_pack)
