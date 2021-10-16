@@ -157,10 +157,20 @@ def print_pack(in_pack):
     if not total_wildcard_rarity:
         total_wildcard_rarity = in_pack['wildcard_slot'][0][1]
     total_pack_rarity = get_total_rarity(in_pack, total_wildcard_rarity)
+    total_rare_rarity = get_rare_rarity(in_pack['rare_slot'][0], in_pack['foil_slot'][0], total_wildcard_rarity)
     print(f'Total: {total_pack_rarity:.7f}%')
+    print(f'Rare/Mythic: {total_rare_rarity:.7f}%')
 
     # print(f'Total Pack Rarity: {total_pack_rarity}%')
 
+def get_rare_rarity(rare, foil, wildcard):
+    # print(rare)
+    # print(foil)
+    # print(wildcard)
+    total = (rare[1]/100)*(wildcard/100)
+    if foil[0] == 'rare' or foil[0] == 'mythic':        
+        total = total*(foil[1]/100)
+    return total*100
 
 def get_total_rarity(calc_pack, wildcard_rm):
     # print(wildcard_rm)
@@ -214,12 +224,80 @@ def calc_wildcard_slot(pack):
 # #
 # #
 # print_pack(test_pack)
-for x in range(1):
-    s_pack = None
-    s_pack = simulate_pack()
-    # if s_pack['wildcard_slot'][0][1] == 1.6:
-    print(f'Pack: {x}')
-    # pprint(s_pack)
-    print_pack(s_pack)
+# for x in range(1):
+#     s_pack = None
+#     s_pack = simulate_pack()
+#     # if s_pack['wildcard_slot'][0][1] == 1.6:
+#     print(f'Pack: {x}')
+#     # pprint(s_pack)
+#     print_pack(s_pack)
 
+if __name__ == "__main__":
+    in_or_sim = input("Input(0) or Sim(1): ")
+    if in_or_sim == "1" or in_or_sim.lower() == "sim":
+        num_sim = input("Number of Sims: ")
+        for x in range(num_sim):
+            s_pack = None
+            s_pack = simulate_pack()
+            print(f'Pack: {x}')
+            print_pack(s_pack)
+    else:
+        if in_or_sim == "0" or in_or_sim.lower() == "input":
+            print("Art Slot")
+            art = int(input("  Signed(0) or Un-signed(1): "))
+            print("Land Slot")
+            land = int(input("  Foil(0) or Non-foil(1): "))
+            print("Connected Slot")
+            conn_c = int(input("  Commons: "))
+            conn_u = int(input("  Uncommons: "))
+            print("Showcase Slot")
+            showcase = int(input(" Uncommon(0) or Common(1): "))
+            print("Wildcard Slot")
+            wild_c = input("  Commons: ")
+            wild_u = input("  Uncommons: ")
+            wild_r = input("  Rares: ")
+            wild_m = input("  Mythics: ")
+            if sum([int(wild_c), int(wild_u), int(wild_r), int(wild_m)]) > 2:
+                print("Too many cards")
+                exit()
+            print("Rare Slot")
+            rare = int(input("  Mythic(0) or Rare(1): "))
+            print("Foil Slot")
+            foil = int(input("  Mythic(0), Rare(1),  Uncommon(2), Common(3): "))
+            print("Token")
+            token = int(input("  The List(0) or Token(1): "))
+            
+            conn = {'U': conn_u, 'C': conn_c}
+            conn_match = [x for x in c_connected_slot if x[0] == conn]
 
+            wild_m = [c_rare_slot[0] for x in range(int(wild_m))]
+            wild_r = [c_rare_slot[1] for x in range(int(wild_r))]
+            
+            # print(wild_m)
+            # print(wild_r)
+
+            wild = {
+                'RM': (sum([len(wild_r), len(wild_m)]), None),
+                'U': int(wild_u),
+                'C': int(wild_c),
+                'R': 0,
+                'M': 0
+            }
+            # print(wild)
+            wild_match = [x for x in c_wildcard_slot if x[0] == wild]
+            # print(wild_match)
+            wild_match[0][0]['R'] = wild_r
+            wild_match[0][0]['M'] = wild_m
+
+            pack = {
+                'art_slot': [c_art_slot[art]],
+                'land_slot': [c_land_slot[land]],
+                'connected_slot': conn_match,
+                'showcase_slot': [c_showcase_slot[showcase]],
+                'wildcard_slot': wild_match,
+                'rare_slot': [c_rare_slot[rare]],
+                'foil_slot': [c_foil_slot[foil]],
+                'token_slot': [c_token_slot[token]]
+            }
+            # pprint(pack)
+            print_pack(pack)
